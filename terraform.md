@@ -453,6 +453,7 @@ Alternatives to Provisioners:
         }
     }
 ```
+
 ```
     resource "aws_instance" "web" {
         # ...
