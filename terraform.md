@@ -523,7 +523,8 @@ Remote Commands have three different modes:
 * File provisioner is useful for copying files and directories to remote machines
     * File provisioner is not recommended and should be avoided if possible
     * More complex tasks its recommended to use Cloud-Init, and strongly recommended in all cases to bake an image with Packer or EC2 Image Builder
-***May need a connection block to specify the connection type, user, and private key***
+
+**May need a connection block to specify the connection type, user, and private key**
 
 ```
     resource "aws_instance" "web" {
