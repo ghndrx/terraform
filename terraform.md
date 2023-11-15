@@ -436,20 +436,24 @@ Alternatives to Provisioners:
 * environment (optional)
     * A map of environment variables to set prior to execution. This is useful for passing secret values to scripts.
 
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "local-exec" {
             command = "echo ${aws_instance.web.private_ip} >> private_ips.txt"
         }
     }
+```
 
+```
     resource "null_resource" "example2" {
         provisioner "local-exec" {
             command = "Get-Date > completed.txt"
             interpreter = ["PowerShell", "-Command"]
         }
     }
-
+```
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "local-exec" {
@@ -461,6 +465,7 @@ Alternatives to Provisioners:
             }
         }
     }
+```
 
 ## Remote-Exec
 * Remote-Exec allows you to execute commands on a target resource after a resource is provisioned
