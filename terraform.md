@@ -181,21 +181,21 @@ Application Failure - What if an application fails?
 Time to Deploy - What if you need to deploy a new version of your application?
 
 Worst Case Scenarios
-    * Accidental Deletions
-    * Compromised by malicious actors
-    * Natural Disasters - Need to change regions (region outages)
+* Accidental Deletions
+* Compromised by malicious actors
+* Natural Disasters - Need to change regions (region outages)
 
 Configuring after deployment does not guarentee 1:1 parity between environments
 Every time cloud-init runs post deploy there is no guarentee that the configuration will be the same as it was before
-    * Cloud-init is a tool that is used to configure virtual machines after they are deployed
-    * Cloud-init is used to configure virtual machines in AWS, GCP, Azure, etc.
+* Cloud-init is a tool that is used to configure virtual machines after they are deployed
+* Cloud-init is used to configure virtual machines in AWS, GCP, Azure, etc.
 
 What if everything fails?
-    * Terraform state file is stored in a remote backend
-    * Terraform state file is version controlled
-    * Terraform state file is backed up
-    * Terraform state file is encrypted
-    * Terraform state file is locked
+* Terraform state file is stored in a remote backend
+* Terraform state file is version controlled
+* Terraform state file is backed up
+* Terraform state file is encrypted
+* Terraform state file is locked
 
 ## Hashicorp
 * Hashicorp is a company that creates open source tools for cloud infrastructure automation
@@ -485,6 +485,7 @@ Remote Commands have three different modes:
             ]
         }
     }
+    
     resource "aws_instance "web" {
         # ...
         provisioner "remote-exec" {
