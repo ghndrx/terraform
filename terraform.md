@@ -405,6 +405,7 @@ Alternatives to Provisioners:
 * Cloud-init
 ***Cloud-init supports chef and puppet, so you can just use cloud-init***
 
+```
     #cloud-config
     puppet:
         install: true
@@ -422,6 +423,7 @@ Alternatives to Provisioners:
         conf:
             agent:
                 server: "puppetserver.example.org"
+```
 
 ## Local-exec
 * Local-exec is used to run scripts on the machine running Terraform
@@ -482,6 +484,7 @@ Remote Commands have three different modes:
 * Scripts
     * Scripts commands are specified as a remote script path
 
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "remote-exec" {
@@ -491,7 +494,9 @@ Remote Commands have three different modes:
             ]
         }
     }
-    
+```
+
+```    
     resource "aws_instance "web" {
         # ...
         provisioner "remote-exec" {
@@ -510,6 +515,7 @@ Remote Commands have three different modes:
             }
         }
     }
+```
 
 ## File Provisioner
 * File provisioner is used to copy files or directories from the machine executing Terraform to the newly created resource
@@ -518,6 +524,8 @@ Remote Commands have three different modes:
     * File provisioner is not recommended and should be avoided if possible
     * More complex tasks its recommended to use Cloud-Init, and strongly recommended in all cases to bake an image with Packer or EC2 Image Builder
 ***May need a connection block to specify the connection type, user, and private key***
+
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "file" {
@@ -525,7 +533,9 @@ Remote Commands have three different modes:
             destination = "/etc/app.conf"
         }
     }
+```
 
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "file" {
@@ -533,7 +543,9 @@ Remote Commands have three different modes:
             destination = "/etc/"
         }
     }
+```
 
+```
     resource "aws_instance" "web" {
         # ...
         provisioner "file" {
@@ -546,6 +558,7 @@ Remote Commands have three different modes:
             }
         }
     }
+```
 
 ## Connection 
 * A connection block tells a provisioner or resource how to connect to the resource 
@@ -564,6 +577,7 @@ With SSH you can connect through a bastion host, eg:
 * bastion_host_key
 * bastion_certificate
 
+```
     provisioner "file" {
         source = "conf/app.conf"
         destination = "/etc/app.conf"
@@ -575,7 +589,9 @@ With SSH you can connect through a bastion host, eg:
             host = "${aws_instance.web.public_ip}"
         }
     }
+```
 
+```
     provisioner "file" {
         source = "conf/app.conf"
         destination = "c:/app/app.conf"
@@ -587,6 +603,7 @@ With SSH you can connect through a bastion host, eg:
             host = "${var.host}"
         }
     }
+```
 
 ## Null Resources
 * null_resource is a placeholder resource that have no specific association to a provider resources
@@ -594,11 +611,14 @@ With SSH you can connect through a bastion host, eg:
 Triggers is a map of values which should cause this set of provisioners to re-run.
 Values are meant to be interpolated references to other resources in the configuration.
 
+```
     resource "aws_instance" "cluster" {
         count = 3
         # ...
     }
+```
 
+```
     resource "null_resource" "example" {
         triggers = {
             cluster_instance_ids = "${join(",", aws_instance.cluster.*.id)}"
@@ -607,11 +627,13 @@ Values are meant to be interpolated references to other resources in the configu
             command = "echo ${aws_instance.web.private_ip} >> private_ips.txt"
         }
     }
+```
 
 ## Terraform Data
 * Similar to null_resource, data sources are used to define a resource that does not create anything
 * Data sources are used to fetch data that is used by other resources
 
+```
     resource "null_resource" "example" {
         triggers = { 
             version = var.version
@@ -620,7 +642,11 @@ Values are meant to be interpolated references to other resources in the configu
             command = "echo ${self.triggers.version}"
         }
     }
+```
+
 can be written as:
+
+```
     resource "terraform_data" "example" {
         triggers = { 
             version = var.version
@@ -629,6 +655,7 @@ can be written as:
             command = "echo ${self.triggers.version}"
         }
     }
+```
 
 ## Terraform Providers
 * Terraform providers are responsible for understanding API interactions and exposing resources
@@ -675,29 +702,36 @@ When creating a module you need to connect it to a version control system (VCS) 
 
 ### Terraform Providers Command
 Get a list of the current providers you are using
-    
+
+```    
     terraform providers
     Providers required by configuration:
     .
     ├── provider[registry.terraform.io/hashicorp/aws]
     └── provider[registry.terraform.io/hashicorp/null]
+```
 
 Set an alternative provider
-    
+
+```    
     provider "aws" {
         region = "us-east-1"
         alias = "east"
     }
+```
 
 How to reference an alias provider
-    
+
+```    
     resource "aws_instance" "web" {
         provider = aws.east
         # ...
     }
+```
 
 How to set alias provider for a parent module
 
+```
     terraform {
         required_providers {
             mycloud = {
@@ -707,17 +741,20 @@ How to set alias provider for a parent module
             }
         }
     }
-    
-    ***~>1.0.0 means any version greater than or equal to 1.0.0***
+```    
+   
+***~>1.0.0 means any version greater than or equal to 1.0.0***
 
 How to set a alias provider for a child module
 
+```
     module "vpc" {
         source = "./vpc"
         providers = {
             aws = aws.east
         }
     }
+```
 
 ## Terraform Modules
 Terraform module is a group of configuration files that provide common functionality.
@@ -760,14 +797,18 @@ Terraform Language consists of only a few basic elements:
 * Expressions - represents a value, either literally or by referencing and combining other values
     * They appear as values for arguments, or within other expressions.
 
+```
     resource "aws_vpc" "main" {
         cidr_block = "var.base_cidr_block"
     }
+```
 
+```
     <BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK LABEL>" {
         # Block body
         <IDENTIFIER> = <EXPRESSION> # Argument
     }
+```
 
 HCL is the low-level language that Terraform uses to parse and load configuration files. HCL is also used by other Hashicorp tools like Packer, Consul, Nomad, Vault, etc.
 * Hashicorp Configuration Language (HCL) is a configuration language built by Hashicorp
@@ -778,6 +819,7 @@ Alternate JSON Syntax
 
 This syntax is useful when generating portions of a configuration programmatically, since it can be easier to generate JSON than HCL.
 
+```
     {
         "resource": {
             "aws_vpc": {
@@ -787,6 +829,7 @@ This syntax is useful when generating portions of a configuration programmatical
             }
         }
     }
+```
 
 ## Terraform Settings
 The special terraform configuration block type eg. terraform {...} 
@@ -796,6 +839,7 @@ The special terraform configuration block type eg. terraform {...}
     * experimments - Specifies experimental features
     * provider_meta - Specifies provider meta-arguments
 
+```
     terraform {
         required_version = ">= 0.13"
         required_providers {
@@ -809,4 +853,4 @@ The special terraform configuration block type eg. terraform {...}
             module_variable_optional_attrs = true
         }
     }
-
+```
