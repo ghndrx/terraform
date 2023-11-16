@@ -138,9 +138,9 @@ Infrastructure lifecycle is a process of managing infrastructure from plan, desi
 ### How to prevent configuration drift?
 * Immutable infrastructure, always create and destroy, never update, Blue/Green deployment strategy
     * Servers are never modified after they're deployed
-    * Instead of updating existing servers, you deploy new servers with the updates using AMI, GCP Templates, etc. 
+    * Instead of updating existing servers, you deploy new servers with the updates using AMI, Compute Images, etc. 
         * AMI - Amazon Machine Image
-        * GCP Templates - Google Cloud Platform Templates
+        * Compute Image - Google Cloud Platform 
     * This approach is more reliable and secure
     * This approach is more scalable
 * Using GitOps to version control IaC, and peer review every single pull request change before applying them
@@ -523,6 +523,7 @@ Remote Commands have three different modes:
 * File provisioner is useful for copying files and directories to remote machines
     * File provisioner is not recommended and should be avoided if possible
     * More complex tasks its recommended to use Cloud-Init, and strongly recommended in all cases to bake an image with Packer or EC2 Image Builder
+
 **May need a connection block to specify the connection type, user, and private key**
 
 ```
@@ -831,8 +832,23 @@ This syntax is useful when generating portions of a configuration programmatical
     }
 ```
 
+## Hashicorp Configuration Language (HCL)
+HCL is an opensource toolkit for creating and managing cloud infrastructure. 
+Terraform Language - .tf
+Packer Template - .pkr.hcl
+Vault Policies - (no extension)
+Boundary Controllers and Workers (.hcl)
+Consul Configuration (.hcl)
+Waypoint Application Configuration (.hcl)
+Nomad Job Specifications (.nomad)
+Shipyard Blueprint (.hcl)
+
+Doesn't use HCL but its own ACL custom language.
+Sentinel Policies (.sentinel)
+
 ## Terraform Settings
 The special terraform configuration block type eg. terraform {...} 
+
 * Terraform block is used to configure some behaviors of Terraform itself
     * required_version - Specifies the version of Terraform that is required
     * required_providers - Specifies the providers required by the configuration
@@ -854,3 +870,120 @@ The special terraform configuration block type eg. terraform {...}
         }
     }
 ```
+## Terraform Input Variables
+Input variables (aka variables or Terraform Variables) are parameters for Terraform modules
+
+Input variables are used to parameterize Terraform configurations
+You can declare variables in either:
+* Root module
+* Child module
+
+Default - A default value which then makes the variable optional
+Type - This argument specifies what value types are accepted for the variable
+Description - A human-friendly description for the variable
+Validation - A validation rule for the variable
+Sensitive - Limits the amount of information that is displayed in the output plan
+
+```
+    variable "region" {
+        type = string
+        default = "us-east-1"
+        description = "The AWS region to deploy to"
+    }
+```
+
+```
+    variable "region" {
+        type = string
+        default = "us-east-1"
+        description = "The AWS region to deploy to"
+        validation {
+            condition = can(regex("^us-(east|west)-1$", var.region))
+            error_message = "Invalid region"
+        }
+    }
+```
+```
+    variable "region" {
+        type = string
+        default = "us-east-1"
+        description = "The AWS region to deploy to"
+        validation {
+            condition = can(regex("^us-(east|west)-1$", var.region))
+            error_message = "Invalid region"
+        }
+    }
+```
+
+## Variable Definitions Files
+A variable definitions file allows you to set the values for multiple variables in a single file. Variable definition files are named .tfvars or .tfvars.json
+
+```
+    region = "us-east-1"
+    instance_type = "t2.micro"
+```
+
+```
+    {
+        "region": "us-east-1",
+        "instance_type": "t2.micro"
+    }
+```
+
+By default terraform.tfvars will be automatically loaded if it exists. You can also use the -var-file flag to specify a file name.
+
+```
+    terraform plan -var-file="testing.tfvars"
+```
+
+## Loading Input Variables
+#### Default Autoloaded Variable Files
+
+```
+ terraform.tfvars
+ terraform.tfvars.json
+ *.auto.tfvars
+ *.auto.tfvars.json
+ ```
+
+When you create a named terraform.tfvars file, Terraform automatically loads it for you, and you can use the values in it without any additional steps.
+
+#### Additional Variable Files (not autoloaded)
+
+```
+ -var-file=testing.tfvars
+ -var-file=production.tfvars
+ -var-file=testing.tfvars.json
+ -var-file=production.tfvars.json
+```
+
+You can create additional variable files and load them with the -var-file flag. This is useful for loading variables for different environments.
+
+If you name your file with the .auto.tfvars or .auto.tfvars.json extension, Terraform will automatically load it for you, but only if it is located in the current working directory.
+
+#### Specify a variables file via command line
+ 
+``` 
+ -var-file="testing.tfvars"
+ -var-file="production.tfvars"
+```
+
+
+
+#### Specify a variable on the command line
+
+``` 
+ -var="region=us-east-1"
+ -var="region=us-east-1" -var="instance_type=t2.micro"
+```
+You can specify a variable on the command line with the -var flag. This is useful for testing and debugging, as well as for situations where you want to override a single variable.
+
+#### Environment Variables
+
+```
+ TF_VAR_region=us-east-1
+ TF_VAR_instance_type=t2.micro
+```
+
+Terraform will watch for environment variables that begin with TF_VAR_ and automatically map them to variables in your configuration.
+
