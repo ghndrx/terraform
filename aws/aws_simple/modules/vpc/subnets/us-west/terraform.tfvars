@@ -7,4 +7,3 @@ us_west_subnet_2_az = "us-west-2b"
 
 us_west_subnet_3_cidr_block = "10.0.3.0/24"
 us_west_subnet_3_az = "us-west-2c"
-

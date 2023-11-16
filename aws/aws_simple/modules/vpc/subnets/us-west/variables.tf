@@ -26,3 +26,8 @@ variable "us_west_subnet_3_az" {
 variable "region" {
     default = "us-west-2"
 }
+
+variable "vpc_id" {
+  description = "The ID of the VPC"
+  type        = string
+}

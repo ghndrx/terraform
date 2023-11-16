@@ -1,40 +1,36 @@
 # Define the VPC and subnets data sources
 data "aws_vpc" "vpc" {
-    id = data.aws_subnet.subnet1.vpc_id
-}
-
-module "vpc_subnets" {
-  source = "../vpc/subnets"
+    id = var.vpc_id
 }
 
 data "aws_subnet" "subnet1" {
-    id = module.vpc_subnets.subnet_ids[0]
+    id = var.us_east_subnet_1_id
 }
 
 data "aws_subnet" "subnet2" {
-    id = module.vpc_subnets.subnet_ids[1]
+    id = var.us_east_subnet_2_id
 }
 
 data "aws_subnet" "subnet3" {
-    id = module.vpc_subnets.subnet_ids[2]
+    id = var.us_east_subnet_3_id
 }
 
 data "aws_subnet" "subnet4" {
-    id = module.vpc_subnets.subnet_ids[3]
+    id = var.us_west_subnet_1_id
 }
 
 data "aws_subnet" "subnet5" {
-    id = module.vpc_subnets.subnet_ids[4]
+    id = var.us_west_subnet_2_id
 }
 
 data "aws_subnet" "subnet6" {
-    id = module.vpc_subnets.subnet_ids[5]
+    id = var.us_west_subnet_3_id
 }
 
 # Create a security group for the EC2 instance
 resource "aws_security_group" "instance" {
     name_prefix = "instance-"
-    vpc_id      = data.aws_vpc.vpc.id
+    vpc_id      = var.vpc_id
 
     ingress {
         from_port   = 80
@@ -73,9 +69,23 @@ resource "aws_launch_configuration" "lc" {
 resource "aws_autoscaling_group" "asg" {
     name_prefix                 = "asg-"
     launch_configuration       = aws_launch_configuration.lc.id
+    depends_on = [ 
+        var.vpc_id, 
+        aws_launch_configuration.lc,
+        data.aws_subnet.subnet1,
+        data.aws_subnet.subnet2,
+        data.aws_subnet.subnet3,
+        data.aws_subnet.subnet4,
+        data.aws_subnet.subnet5,
+        data.aws_subnet.subnet6
+    ]
     vpc_zone_identifier         = [
         data.aws_subnet.subnet1.id,
-        data.aws_subnet.subnet2.id
+        data.aws_subnet.subnet2.id,
+        data.aws_subnet.subnet3.id,
+        data.aws_subnet.subnet4.id,
+        data.aws_subnet.subnet5.id,
+        data.aws_subnet.subnet6.id
     ]
     min_size                    = var.min_size
     max_size                    = var.max_size
@@ -90,7 +100,8 @@ resource "aws_autoscaling_group" "asg" {
     }
 }
 
-# Output the instance public IP address
-output "public_ip" {
-    value = aws_autoscaling_group.asg.instances[0].public_ip
+data "aws_instances" "asg_instances" {
+  instance_tags = {
+    "aws:autoscaling:groupName" = aws_autoscaling_group.asg.name
+  }
 }

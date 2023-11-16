@@ -1,34 +1,43 @@
 # Define provider
 provider "aws" {
   region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
 }
 
 # Define modules
-module "vpc_us_west" {
+module "vpc_us" {
   source = "./modules/vpc"
+
+  us_east_subnet_1_id = module.subnets_us_east.us_east_subnet_1_id
+  us_east_subnet_2_id = module.subnets_us_east.us_east_subnet_2_id
+  us_east_subnet_3_id = module.subnets_us_east.us_east_subnet_3_id
+
+  us_west_subnet_1_id = module.subnets_us_west.us_west_subnet_1_id
+  us_west_subnet_2_id = module.subnets_us_west.us_west_subnet_2_id
+  us_west_subnet_3_id = module.subnets_us_west.us_west_subnet_3_id
 }
 
-module "subnet_us_west" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc_us_west.vpc_id
-  region = "us-west-2"
+module "subnets_us_west" {
+  source = "./modules/vpc/subnets/us-west"
+  vpc_id = module.vpc_us.vpc_id
 }
 
-module "vpc_us_east" {
-  source = "./modules/vpc"
-  region = "us-east-1"
-}
-
-module "subnet_us_east" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc_us_east.vpc_id
-  region = "us-east-1"
+module "subnets_us_east" {
+  source = "./modules/vpc/subnets/us-east"
+  vpc_id = module.vpc_us.vpc_id
 }
 
 module "ec2" {
   source = "./modules/ec2"
+  
+  us_east_subnet_1_id = module.subnets_us_east.us_east_subnet_1_id
+  us_east_subnet_2_id = module.subnets_us_east.us_east_subnet_2_id
+  us_east_subnet_3_id = module.subnets_us_east.us_east_subnet_3_id
+
+  us_west_subnet_1_id = module.subnets_us_west.us_west_subnet_1_id
+  us_west_subnet_2_id = module.subnets_us_west.us_west_subnet_2_id
+  us_west_subnet_3_id = module.subnets_us_west.us_west_subnet_3_id
+
+  vpc_id = module.vpc_us.vpc_id
 }
 
 module "elb" {

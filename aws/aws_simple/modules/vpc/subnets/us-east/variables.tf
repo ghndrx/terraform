@@ -26,3 +26,8 @@ variable "us_east_subnet_2_cidr_block" {
 variable "us_east_subnet_3_cidr_block" {
     default = "10.0.6.0/24"
 }
+
+variable "vpc_id" {
+  description = "The ID of the VPC"
+  type        = string
+}
