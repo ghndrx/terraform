@@ -14,6 +14,7 @@ provider "aws" {
 module "vpc-east" {
   source = "./modules/vpc/vpc-east"
   region = "us-east-1"
+
   us_east_subnet_1_id = module.subnets_us_east.us_east_subnet_1_id
   us_east_subnet_2_id = module.subnets_us_east.us_east_subnet_2_id
   us_east_subnet_3_id = module.subnets_us_east.us_east_subnet_3_id
@@ -22,6 +23,7 @@ module "vpc-east" {
 module "vpc-west" {
   source = "./modules/vpc/vpc-west"
   region = "us-west-2"
+  
   us_west_subnet_1_id = module.subnets_us_west.us_west_subnet_1_id
   us_west_subnet_2_id = module.subnets_us_west.us_west_subnet_2_id
   us_west_subnet_3_id = module.subnets_us_west.us_west_subnet_3_id
