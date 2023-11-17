@@ -28,22 +28,10 @@ variable "us_east_subnet_3_id" {
   type        = string
 }
 
-variable "us_west_subnet_1_id" {
-  description = "The ID of the first US West subnet"
-  type        = string
-}
-
-variable "us_west_subnet_2_id" {
-  description = "The ID of the second US West subnet"
-  type        = string
-}
-
-variable "us_west_subnet_3_id" {
-  description = "The ID of the third US West subnet"
-  type        = string
-}
-
-variable "vpc_id" {
+variable "vpc_id_east_1" {
   description = "The ID of the VPC"
   type        = string
 }
+
+
+

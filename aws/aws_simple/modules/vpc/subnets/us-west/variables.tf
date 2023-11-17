@@ -27,7 +27,8 @@ variable "region" {
     default = "us-west-2"
 }
 
-variable "vpc_id" {
+
+variable "vpc_id_west_2" {
   description = "The ID of the VPC"
   type        = string
 }
