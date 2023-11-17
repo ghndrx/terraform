@@ -6,7 +6,7 @@ provider "aws" {
 resource "aws_security_group" "instance-west" {
     name_prefix = "instance-west-"
     vpc_id      = var.vpc_id_west_2
-
+    # HTTP access
     ingress {
         from_port   = 80
         to_port     = 80
@@ -14,9 +14,18 @@ resource "aws_security_group" "instance-west" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 
+    # HTTPS access
     ingress {
         from_port   = 443
         to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    # SSH access
+    ingress {
+        from_port   = 22
+        to_port     = 22
         protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -26,27 +35,32 @@ resource "aws_security_group" "instance-west" {
     }
 }
 
-# Define the Launch Configuration
-resource "aws_launch_configuration" "lc-west" {
-    name_prefix   = "lc-west"
+# Define the Launch Template
+resource "aws_launch_template" "lt-west" {
+    name_prefix   = "lt-west"
     image_id = "ami-03bf1eb153d14803f" 
     instance_type = "t3.small"
-    security_groups = [
-        aws_security_group.instance-west.id
-    ]
-    user_data = file("${path.module}/user-data.sh")
-    root_block_device {
-        volume_size = 300
+    user_data = base64encode(file("${path.module}/user-data.sh"))
+    block_device_mappings {
+        device_name = "/dev/xvda"
+        ebs {
+            volume_size = 300
+        }
+    }
+    network_interfaces {
+        associate_public_ip_address = true
+        security_groups = [aws_security_group.instance-west.id]
+
     }
 }
 
 # Define the Auto Scaling Group
 resource "aws_autoscaling_group" "asg-west" {
     name_prefix                 = "asg-west-"
-    launch_configuration       = aws_launch_configuration.lc-west.id
-    depends_on = [ 
-        aws_launch_configuration.lc-west,
-    ]
+    launch_template {
+        id      = aws_launch_template.lt-west.id
+        version = "$Latest"
+    }    
     vpc_zone_identifier         = [
         var.us_west_subnet_1_id,
         var.us_west_subnet_2_id,
@@ -63,6 +77,10 @@ resource "aws_autoscaling_group" "asg-west" {
         value               = "asg-instance-west"
         propagate_at_launch = true
     }
+    depends_on = [
+        aws_security_group.instance-west,
+        aws_launch_template.lt-west
+    ]
 }
 
 data "aws_instances" "asg_instances-west" {

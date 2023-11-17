@@ -9,6 +9,7 @@ resource "aws_subnet" "us_west_subnet_1" {
     tags = {
         Name = "${var.region}_${var.us_west_subnet_1_az}_subnet"
     }
+    map_public_ip_on_launch = true
     depends_on = [var.vpc_id_west_2]
 }
 
@@ -19,6 +20,7 @@ resource "aws_subnet" "us_west_subnet_2" {
     tags = {
         Name = "${var.region}_${var.us_west_subnet_2_az}_subnet"
     }
+    map_public_ip_on_launch = true
     depends_on = [var.vpc_id_west_2]
 }
 
@@ -29,5 +31,6 @@ resource "aws_subnet" "us_west_subnet_3" {
     tags = {
         Name = "${var.region}_${var.us_west_subnet_3_az}_subnet"
     }
+    map_public_ip_on_launch = true
     depends_on = [var.vpc_id_west_2]
 }
