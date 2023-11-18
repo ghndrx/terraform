@@ -1,3 +1,11 @@
+terraform {
+    backend "s3" {
+        bucket = "my-tf-bucket-ghndrx"
+        key    = "aws_vpc_peering/terraform.tfstate"
+        region = "us-west-2"
+    }
+}
+
 # Define AWS provider with aliases for us-west-1 and us-east-1 regions
 provider "aws" {
     alias  = "us-west-1"
@@ -66,6 +74,20 @@ resource "aws_vpc_peering_connection_accepter" "peering_accepter" {
   vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
   auto_accept = true
 
+  provider = aws.us-east-1
+}
+
+resource "aws_route" "peer-route-us-west-1" {
+  route_table_id            = aws_route_table.us-west-1-route-table.id
+  destination_cidr_block    = aws_vpc.us-east-1.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
+  provider = aws.us-west-1
+}
+
+resource "aws_route" "peer-route-us-east-1" {
+  route_table_id            = aws_route_table.us-east-1-route-table.id
+  destination_cidr_block    = aws_vpc.us-west-1.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.peering_connection.id
   provider = aws.us-east-1
 }
 
@@ -177,6 +199,12 @@ resource "aws_security_group" "us-west-1-instance-sg" {
         protocol    = "-1"
         cidr_blocks = ["10.1.0.0/16", "0.0.0.0/0"]
     }
+        ingress {
+        from_port   = -1
+        to_port     = -1
+        protocol    = "icmp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 }
 
 resource "aws_security_group" "us-east-1-instance-sg" {
@@ -214,6 +242,12 @@ resource "aws_security_group" "us-east-1-instance-sg" {
         to_port     = 0
         protocol    = "-1"
         cidr_blocks = ["10.1.0.0/16", "0.0.0.0/0"]
+    }
+    ingress {
+        from_port   = -1
+        to_port     = -1
+        protocol    = "icmp"
+        cidr_blocks = ["0.0.0.0/0"]
     }
 }
 
