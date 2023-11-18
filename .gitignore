@@ -13,3 +13,7 @@ aws/aws_simple/.terraform/providers/registry.terraform.io/hashicorp/template/2.2
 aws/aws_simple/.terraform/providers/registry.terraform.io/hashicorp/aws/5.26.0/linux_amd64/terraform-provider-aws_v5.26.0_x5
 aws/aws_simple/.terraform/terraform.tfstate
 aws/example-backend/terraform.tfstate
+aws/aws_vpc_peering/.terraform.lock.hcl
+aws/aws_vpc_peering/terraform.tfstate
+.gitignore
+aws/aws_vpc_peering/.terraform/providers/registry.terraform.io/hashicorp/aws/5.26.0/linux_amd64/terraform-provider-aws_v5.26.0_x5
