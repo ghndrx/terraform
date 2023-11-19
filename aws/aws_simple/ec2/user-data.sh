@@ -16,7 +16,7 @@ sudo chmod 600 /home/greg/.ssh/authorized_keys
 sudo chown -R greg:greg /home/greg/.ssh
 
 # Add your public key to authorized_keys
-sudo echo "YOUR_PUBLIC_KEY" >> /home/greg/.ssh/authorized_keys
+sudo echo "" >> /home/greg/.ssh/authorized_keys
 
 # Set hostname
 INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
