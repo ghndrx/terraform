@@ -17,3 +17,5 @@ aws/aws_vpc_peering/.terraform/providers/registry.terraform.io/hashicorp/aws/5.2
 aws/aws_vpc_peering/.terraform/terraform.tfstate
 aws/s3/.terraform/providers/registry.terraform.io/hashicorp/aws/5.26.0/linux_amd64/terraform-provider-aws_v5.26.0_x5
 aws/terraform-backend/terraform.tfstate
+aws/aws_asg/.terraform/modules/modules.json
+aws/aws_asg/.terraform/providers/registry.terraform.io/hashicorp/aws/5.26.0/linux_amd64/terraform-provider-aws_v5.26.0_x5
